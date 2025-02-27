@@ -1,0 +1,17 @@
+server:
+  port: 8090  # Port générique, remplacé par celui du profil actif
+
+spring:
+  application:
+    name: ProductManagerAPI
+  profiles:
+    active: dev  # Définit "dev" comme profil actif par défaut
+
+# Modifier le profile :
+# Si tu veux exécuter ton application en mode prod, sans modifier application.yaml
+# cmd: mvn spring-boot:run -Dspring-boot.run.profiles=prod
+# Ou en ajoutant --spring.profiles.active=prod aux arguments JVM dans IntelliJ ou Eclipse.
+
+# Todo:
+# Profiles (Default, Dev, Prod)
+# Simple CRUD without DTO

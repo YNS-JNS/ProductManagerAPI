@@ -1,0 +1,23 @@
+# Configuration PROD
+server:
+  port: 9090  # Port spécifique pour l'environnement prod
+
+spring:
+  config:
+    activate:
+      on-profile: prod  # Active cette configuration si le profil "prod" est activé
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/myProdDbProductsApi
+    username: root
+    password: ''
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update  # ⚠️ Ne pas utiliser "create" en production, sinon toutes les tables seront supprimées et recréées !
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true

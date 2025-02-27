@@ -1,0 +1,30 @@
+# Configuration DEV
+server:
+  port: 8091  # Port spécifique pour l'environnement dev
+
+spring:
+  config:
+    activate:
+      on-profile: dev  # Active cette configuration si le profil "dev" est activé
+
+  datasource:
+    url: jdbc:h2:mem:myDevDbProductsApi
+    driver-class-name: org.h2.Driver
+
+  h2:
+    console:
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+      enabled: true
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update  # Conserve les données entre les redémarrages
+    properties:
+      hibernate:
+        format_sql: true  # Active l'affichage des requêtes formatées
+    show-sql: true  # Affiche les requêtes SQL dans la console
+
