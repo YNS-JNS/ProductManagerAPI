@@ -1,7 +1,7 @@
 package ma.tuto.productmanagerapi.application.service.impl;
 
 import ma.tuto.productmanagerapi.application.dto.CategoryDTO;
-import ma.tuto.productmanagerapi.application.mapper.CategoryManualMapper;
+import ma.tuto.productmanagerapi.application.mapper.manual.CategoryManualMapper;
 import ma.tuto.productmanagerapi.domain.model.Category;
 import ma.tuto.productmanagerapi.domain.repository.CategoryRepository;
 import ma.tuto.productmanagerapi.application.service.ICategoryService;
