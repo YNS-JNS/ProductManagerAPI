@@ -2,7 +2,7 @@ package ma.tuto.productmanagerapi.application.service.impl;
 
 import ma.tuto.productmanagerapi.application.dto.ProductRequestDTO;
 import ma.tuto.productmanagerapi.application.dto.ProductResponseDTO;
-import ma.tuto.productmanagerapi.application.mapper.ProductManualMapper;
+import ma.tuto.productmanagerapi.application.mapper.manual.ProductManualMapper;
 import ma.tuto.productmanagerapi.domain.model.Category;
 import ma.tuto.productmanagerapi.domain.model.Product;
 import ma.tuto.productmanagerapi.domain.repository.CategoryRepository;

@@ -1,4 +1,4 @@
-package ma.tuto.productmanagerapi.application.mapper;
+package ma.tuto.productmanagerapi.application.mapper.manual;
 
 import ma.tuto.productmanagerapi.application.dto.CategoryDTO;
 import ma.tuto.productmanagerapi.application.dto.ProductRequestDTO;
