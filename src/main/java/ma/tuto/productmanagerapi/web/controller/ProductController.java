@@ -1,5 +1,6 @@
 package ma.tuto.productmanagerapi.web.controller;
 
+import jakarta.validation.Valid;
 import ma.tuto.productmanagerapi.application.dto.ProductRequestDTO;
 import ma.tuto.productmanagerapi.application.dto.ProductResponseDTO;
 import ma.tuto.productmanagerapi.application.service.IProductService;
@@ -23,7 +24,7 @@ public class ProductController {
 
     // POST
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> createProductCtrl(@RequestBody ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<ProductResponseDTO> createProductCtrl(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
         ProductResponseDTO productCreated = productService.createProductServ(productRequestDTO);
         return new ResponseEntity<>(productCreated, HttpStatus.CREATED);
     }

@@ -1,8 +1,10 @@
 package ma.tuto.productmanagerapi.application.service.impl;
 
+import jakarta.transaction.Transactional;
 import ma.tuto.productmanagerapi.application.dto.ProductRequestDTO;
 import ma.tuto.productmanagerapi.application.dto.ProductResponseDTO;
 import ma.tuto.productmanagerapi.application.mapper.manual.ProductManualMapper;
+import ma.tuto.productmanagerapi.common.exception.CategoryNotFoundException;
 import ma.tuto.productmanagerapi.domain.model.Category;
 import ma.tuto.productmanagerapi.domain.model.Product;
 import ma.tuto.productmanagerapi.domain.repository.CategoryRepository;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ProductServiceImpl implements IProductService {
 
     // DI :---------------------------------------------------------------
@@ -31,9 +34,14 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductResponseDTO createProductServ(ProductRequestDTO productRequestDTO) {
         // Check if category exists
-        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
-                .orElseThrow(()-> new RuntimeException("Category not found") );
+//        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+//                .orElseThrow(()-> new RuntimeException("Category not found") );
 
+        Long categoryId = productRequestDTO.getCategoryId();
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(()-> new CategoryNotFoundException(categoryId) );
+
+        // Conversion DTO to Entity
         Product product = productManualMapper.toEntity(productRequestDTO, category);
         return productManualMapper.toDTO(productRepository.save(product));
     }
