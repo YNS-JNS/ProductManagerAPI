@@ -34,12 +34,14 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductResponseDTO createProductServ(ProductRequestDTO productRequestDTO) {
         // Check if category exists
-//        Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
-//                .orElseThrow(()-> new RuntimeException("Category not found") );
+        // Category category = categoryRepository.findById(productRequestDTO.getCategoryId())
+        // .orElseThrow(()-> new RuntimeException("Category not found") );
 
+        // Get Category id from productRequestDTO
         Long categoryId = productRequestDTO.getCategoryId();
+        // Check if category exists
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(()-> new CategoryNotFoundException(categoryId) );
+                .orElseThrow(() -> new CategoryNotFoundException(categoryId));
 
         // Conversion DTO to Entity
         Product product = productManualMapper.toEntity(productRequestDTO, category);
@@ -49,6 +51,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<ProductResponseDTO> getProductsServ() {
         return productRepository.findAll().stream()
+                //.map( prod -> productManualMapper.toDTO(prod))
                 .map(productManualMapper::toDTO)
                 .collect(Collectors.toList());
     }

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+// *** Gestionnaire global pour les exceptions *** :
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -44,5 +46,28 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND.value()
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    // Produit non trouvé
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleProductNotFoundException(ProductNotFoundException ex, WebRequest request) {
+
+        ErrorDetails errorDetails = new ErrorDetails(
+                ex.getMessage(),
+                request.getDescription(false),
+                HttpStatus.NOT_FOUND.value()
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    // Produit Data invalide
+    @ExceptionHandler(InvalidProductDataException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidProductDataException(InvalidProductDataException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                ex.getMessage(),
+                request.getDescription(false),
+                HttpStatus.BAD_REQUEST.value()
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 }
