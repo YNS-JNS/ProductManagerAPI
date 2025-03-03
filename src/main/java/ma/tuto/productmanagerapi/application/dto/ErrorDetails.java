@@ -4,6 +4,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+// *** DTO pour les réponses d'erreur *** :
+
 @Data
 public class ErrorDetails {
     private LocalDateTime timestamp;
