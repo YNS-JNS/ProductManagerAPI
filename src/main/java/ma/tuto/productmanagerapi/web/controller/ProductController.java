@@ -29,10 +29,22 @@ public class ProductController {
         return new ResponseEntity<>(productCreated, HttpStatus.CREATED);
     }
 
-    // Get
+    // Get All Products
     @GetMapping
     public ResponseEntity<List<ProductResponseDTO>> getProductsCtrl() {
         List<ProductResponseDTO> products = productService.getProductsServ();
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    // Get One Product
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> getProductCtrl(@PathVariable Long id) {
+        return new ResponseEntity<>(productService.getOneProductServ(id), HttpStatus.OK);
+    }
+
+    // PUT
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> updateProductCtrl(@PathVariable Long id, @Valid  @RequestBody ProductRequestDTO productRequestDTO) {
+        return new ResponseEntity<>(productService.updateProductServ(id, productRequestDTO), HttpStatus.OK);
     }
 }
