@@ -15,17 +15,27 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // Active la configuration de sécurité web dans Spring
 @Slf4j
 public class SecurityConfig {
 
-    // Injecte Password encoder
+    /*
+    Concepts fondamentaux :
+    Authentification : Vérifie l’identité de l’utilisateur (qui il est).
+    Autorisation : Vérifie les permissions de l’utilisateur (ce qu’il peut faire).
+    Rôles : Groupes de permissions (par exemple, "USER" ou "ADMIN").
+    PasswordEncoder : Outil pour encoder et vérifier les mots de passe
+    */
+
+    // Injecte Password encoder ******************************
     private final PasswordEncoder passwordEncoder;
 
     public SecurityConfig(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
+    // *******************************************************
 
+    // Declare all public endpoints
     private static final String[] AUTH_WHITELIST = {
             // -- Swagger UI v2
             "/v2/api-docs",
@@ -37,8 +47,9 @@ public class SecurityConfig {
             "/webjars/**",
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
             // other public endpoints of your API may be appended to this array
+            "/api/v1/public/**",
     };
 
     // Create users in memory
@@ -74,8 +85,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Pas de sessions
                 .authorizeHttpRequests(
                         auth -> auth
-                                //.requestMatchers(AUTH_WHITELIST).permitAll()
-                                .requestMatchers("/api/v1/public/**").permitAll() // (sans authentification)
+                                .requestMatchers(AUTH_WHITELIST).permitAll() // (sans authentification)
                                 .requestMatchers("/api/v1/private-user/**").hasAuthority("ROLE_USER") // (avec authentification et autorité USER)
                                 .requestMatchers("/api/v1/private-admin/**").hasAuthority("ROLE_ADMIN") // (avec authentification et autorité ADMIN )
                                 .requestMatchers("/api/v1/ressources/**").authenticated() // (avec authentification)
