@@ -6,10 +6,10 @@ spring:
     name: ProductManagerAPI
   profiles:
     active: dev  # Définit "dev" comme profil actif par défaut
-  security:
-    user:
-      name: admin
-      password: 123
+#  security:
+#    user:
+#      name: admin
+#      password: 123
 
 # customize the path for swagger doc :
 #springdoc:
