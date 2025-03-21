@@ -2,6 +2,7 @@ package ma.tuto.productmanagerapi.domain.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@Builder
 public class User {
 
     @Id
@@ -18,6 +20,5 @@ public class User {
     private String username;
     private String email;
     private String password;
-    // @Enumerated(EnumType.STRING)
-    // private Role role; // ADMIN, USER, etc.
+    private String role;
 }
