@@ -1,39 +1,22 @@
 package ma.tuto.productmanagerapi.infrastructure.security.config;
 
-import lombok.extern.slf4j.Slf4j;
+import ma.tuto.productmanagerapi.infrastructure.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity // Active la configuration de sécurité web dans Spring
-@Slf4j
 public class SecurityConfig {
-
-    /*
-    Concepts fondamentaux :
-    Authentification : Vérifie l’identité de l’utilisateur (qui il est).
-    Autorisation : Vérifie les permissions de l’utilisateur (ce qu’il peut faire).
-    Rôles : Groupes de permissions (par exemple, "USER" ou "ADMIN").
-    PasswordEncoder : Outil pour encoder et vérifier les mots de passe
-    */
-
-    // Injecte Password encoder ******************************
-    private final PasswordEncoder passwordEncoder;
-
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-    // *******************************************************
 
     // Declare all public endpoints
     private static final String[] AUTH_WHITELIST = {
@@ -50,34 +33,33 @@ public class SecurityConfig {
             "/swagger-ui/**",
             // other public endpoints of your API may be appended to this array
             "/api/v1/public/**",
+            "/h2-console/**", // DB H2
     };
 
-    // Create users in memory
-    @Bean
-    UserDetailsService userDetailsService() {
+    private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-        // On a créé deux utilisateurs
-        UserDetails adminUser = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .authorities("ROLE_ADMIN")
-                .build();
-
-        UserDetails simpleUser = User.builder()
-                .username("user")
-                .password(passwordEncoder.encode("user123"))
-                .authorities("ROLE_USER")
-                .build();
-
-        // log :
-        log.info("admin user: {}", adminUser);
-        log.info("simple user: {}", simpleUser);
-
-        // On a persisté les deux utilisateurs en mémoire
-        return new InMemoryUserDetailsManager(adminUser, simpleUser);
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, PasswordEncoder passwordEncoder) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // FilterChain
+    // Définition du DaoAuthenticationProvider pour expliciter la source d'authentification
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(customUserDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        return authenticationProvider;
+    };
+
+    // Définition de l'AuthenticationManager
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
+
+    // Configuration de la SecurityFilterChain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -86,14 +68,27 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers(AUTH_WHITELIST).permitAll() // (sans authentification)
-                                .requestMatchers("/api/v1/private-user/**").hasAuthority("ROLE_USER") // (avec authentification et autorité USER)
-                                .requestMatchers("/api/v1/private-admin/**").hasAuthority("ROLE_ADMIN") // (avec authentification et autorité ADMIN )
-                                .requestMatchers("/api/v1/ressources/**").authenticated() // (avec authentification)
-                        //.anyRequest().authenticated()
+                                .requestMatchers("/api/v1/private-user/**").hasAnyRole("USER", "ADMIN") // (avec authentification et role USER ou ADMIN)
+                                .requestMatchers("/api/v1/private-admin/**").hasRole("ADMIN") // (avec authentification et role ADMIN )
+                                .anyRequest().authenticated()
                 )
-                .httpBasic(httpBasic -> {
-                })
-                .formLogin(AbstractHttpConfigurer::disable); // Désactivation de l'authentification par formulaire
+                .httpBasic(httpBasic -> {})
+                //.formLogin(AbstractHttpConfigurer::disable) // Désactivation de l'authentification par formulaire
+                .formLogin(formLogin -> {}) // Désactivation de l'authentification par formulaire
+                // Ajout de la configuration pour autoriser les frames
+                .headers(headers -> {
+                    headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
+                    // headers.frameOptions(f-> f.disable());
+                });
         return http.build();
+
+        /*
+        * Nb:
+        * *********************************************************************************************************************************
+        * H2 Console utilise des frames pour afficher son interface.
+        * Par défaut, Spring Security bloque l'affichage en mode frame pour des raisons de sécurité (via la configuration des headers HTTP)
+        * *********************************************************************************************************************************
+        *
+        * */
     }
 }
