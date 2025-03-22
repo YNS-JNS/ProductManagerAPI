@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entité représentant un utilisateur.
+ * Les attributs username, email, password et role sont stockés en base.
+ */
 @Entity
 @Data
 @NoArgsConstructor
@@ -20,5 +24,6 @@ public class User {
     private String username;
     private String email;
     private String password;
+    // Rôle de l'utilisateur ("USER" ou "ADMIN") sans préfixe "ROLE_"
     private String role;
 }
